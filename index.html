@@ -1,0 +1,93 @@
+<html>
+    <head>
+        <title>JS</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                font-family: Courier;
+            }
+
+            .form-container {
+                width: 600px;
+                margin: 5rem auto;
+            }
+
+            .form-container .form-element {
+                padding: 1.0rem;
+            }
+
+            .form-container .form-element label {
+                width: 100%;
+                display: block;
+            }
+
+            .form-container .form-element input[type=text] {
+                padding: 0.2rem 0.4rem;
+                width: 90%;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>IP Geolocation Data</h1>
+
+            <p>Enter IP address in the form below</p>
+        </div>
+
+        <div class="form-container">
+            <form action="#">
+                <div class="form-element">
+                    <label>IP</label>
+                    <input type="text" name="ip" />
+                </div>
+                <div class="form-element">
+                    <label>Country</label>
+                    <input type="text" name="country" readonly />
+                </div>
+                <div class="form-element">
+                    <label>City</label>
+                    <input type="text" name="city" readonly />
+                </div>
+                <div class="form-element">
+                    <label>Zip</label>
+                    <input type="text" name="zip" readonly />
+                </div>
+            </form>
+        </div>
+
+        <script type="text/javascript">
+            const ipAddress = document.getElementsByName('ip')[0];
+            const country = document.getElementsByName('country')[0];
+            const city = document.getElementsByName('city')[0];
+            const zip = document.getElementsByName('zip')[0];
+
+            ipAddress.addEventListener('input', async function(e) {
+                if (ipAddress.value === '') {
+                    cleanGelocationData(country, city, zip);
+                    return;
+                }
+
+                const result = await fetch('http://ip-api.com/json/' + ipAddress.value)
+                .then(response => response.json())
+                .then(json => {
+                    if (json.status !== 'success') {
+                        cleanGelocationData(country, city, zip);
+                        return;
+                    }
+
+                    country.value = json.country;
+                    city.value = json.city;
+                    zip.value = json.zip;
+                })
+                .catch(error => console.log(error));
+            });
+
+            function cleanGelocationData(country, city, zip) {
+                country.value = '';
+                city.value = '';
+                zip.value = '';
+            }
+        </script>
+    </body>
+</html>
